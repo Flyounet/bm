@@ -131,7 +131,7 @@ config() {
 		export _BM_CMD_CAPTURE_ARGS='-C -o {FILE}.png {URL}'
 		export _BM_CMD_POST_CAPTURE='cp -- "{FILE}-clipped.png" "{FILE}" ; rm -f -- {FILE}-{clipped,full,thumb}.png'
 		export _BM_CMD_MD5='md5'
-		export _BM_CMD_COPY='xsel'
+		export _BM_CMD_COPY='pbcopy'
 	fi
 
 	# _BM_PRINT_LINE : This line is used to print datas
@@ -529,12 +529,14 @@ copy_bookmark() {
 			_all="$(awk -F'|' '{print $4}' <<< "${_nl}") ${_all}"
 		else
 			awk -F'|' '{print $4}' <<< "${_nl}" | "${_BM_CMD_COPY}"
-			awk -F'|' '{print $4}' <<< "${_nl}" | "${_BM_CMD_COPY}" -b
+			[[ "${_BM_CMD_COPY}" = 'xsel' ]] && awk -F'|' '{print $4}' <<< "${_nl}" | "${_BM_CMD_COPY}" -b
 			[[ "${_BM_OPEN_FIRST,,}" = 'true' || ${__X:=0} -eq 1 ]] && exit 0
 		fi
 	done <<< "$(echo -e "${_lines}")"
-	[[ "${_BM_OPEN_ALL,,}" = 'true' || ${__Y:=0} -eq 1 ]]	&& "${_BM_CMD_COPY}" <<< "${_all}"
-	[[ "${_BM_OPEN_ALL,,}" = 'true' || ${__Y:=0} -eq 1 ]]	&& "${_BM_CMD_COPY}" -b <<< "${_all}"
+	[[ "${_BM_OPEN_ALL,,}" = 'true' || ${__Y:=0} -eq 1 ]] && {
+		"${_BM_CMD_COPY}" <<< "${_all}"
+		[[ "${_BM_CMD_COPY}" = 'xsel' ]] && "${_BM_CMD_COPY}" -b <<< "${_all}"
+	}
 }
 
 delete_bookmark() {
