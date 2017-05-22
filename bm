@@ -158,7 +158,7 @@ slug() {
 
 # version
 RELEASE='$Format:%h$'
-VERSION='0.6.7'
+VERSION='0.6.8'
 
 #
 # Output usage info
